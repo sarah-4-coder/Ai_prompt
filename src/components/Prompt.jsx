@@ -1,16 +1,55 @@
-import FileUpload from "./Drop";
+import React, { useState, useEffect } from 'react';
+import FileUpload from './Drop';
 
 const Prompt = () => {
+  const [files, setFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    // Load saved files from local storage on component mount
+    const savedFileData = localStorage.getItem('savedFiles');
+    if (savedFileData) {
+      setFiles(JSON.parse(savedFileData));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Update local storage when files change
+    localStorage.setItem('savedFiles', JSON.stringify(files));
+  }, [files]);
+
+  const handleFileClick = (file) => {
+    // Set the selected file when clicked on the sidebar
+    setSelectedFile(file);
+  };
+
+  const handleFileUpload = (file) => {
+    // Add the newly uploaded file to the list
+    setFiles((prevFiles) => [...prevFiles, file]);
+  };
+
   return (
-    <div className="flex ">
+    <div className="flex">
       <section className="bg-gray-900 w-[25%] h-screen text-white">
-        fgdgf
+        <h2>Sidebar</h2>
+        <ul>
+          {files.map((file, index) => (
+            <li key={index}>
+              <a
+                href={URL.createObjectURL(file)}
+                download={file.name}
+                onClick={() => handleFileClick(file)}
+              >
+                {file.name}
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
       <section className="right relative w-[75%] h-screen bg-gray-500">
         <div className="drop w-[60%] m-auto pt-[12%] ">
-          <FileUpload />
+          <FileUpload onFileSelect={handleFileUpload} />
         </div>
-        {/* <input type="text" className="absolute bottom-12 left-1/2 translate-x-[-50%] border-none w-[40%] h-[5%]"  /> */}
       </section>
     </div>
   );
