@@ -1,28 +1,47 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SearchPopup from './Search';
 
-const FileUpload = () => {
+const FileUpload = ({ onFileSelect }) => {
   const [file, setFile] = useState(null);
   const [showSearchPopup, setShowSearchPopup] = useState(false);
   const fileInputRef = useRef(null);
+  const [savedFiles, setSavedFiles] = useState([]);
+
+  // Load saved files from local storage on component mount
+  useEffect(() => {
+    const savedFileData = localStorage.getItem('savedFiles');
+    if (savedFileData) {
+      setSavedFiles(JSON.parse(savedFileData));
+    }
+  }, []);
 
   const handleDrop = (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
     setFile(droppedFile);
-    localStorage.setItem('uploadedFile', JSON.stringify(droppedFile));
     setShowSearchPopup(true);
-  };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
+    // Save the dropped file to local storage
+    const updatedFiles = [...savedFiles, droppedFile];
+    localStorage.setItem('savedFiles', JSON.stringify(updatedFiles));
+    setSavedFiles(updatedFiles);
+
+    // Pass the dropped file to the parent component
+    onFileSelect(droppedFile);
   };
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
-    localStorage.setItem('uploadedFile', JSON.stringify(selectedFile));
     setShowSearchPopup(true);
+
+    // Save the selected file to local storage
+    const updatedFiles = [...savedFiles, selectedFile];
+    localStorage.setItem('savedFiles', JSON.stringify(updatedFiles));
+    setSavedFiles(updatedFiles);
+
+    // Pass the selected file to the parent component
+    onFileSelect(selectedFile);
   };
 
   const openFileDialog = () => {
@@ -36,6 +55,10 @@ const FileUpload = () => {
   const handleSearch = (searchTerm) => {
     // Implement your search logic here
     console.log('Searching for:', searchTerm);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
   return (
@@ -76,3 +99,7 @@ const FileUpload = () => {
 };
 
 export default FileUpload;
+
+// ----- Prompt.js -----
+
+
