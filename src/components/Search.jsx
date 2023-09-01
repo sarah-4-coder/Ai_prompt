@@ -5,7 +5,7 @@ const SearchPopup = ({ onClose, onSearch }) => {
 
   const handleSearch = () => {
     onSearch(searchTerm);
-    onClose();
+    // onClose();
   };
 
   return (
