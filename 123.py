@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import openai
-data = pd.read_csv("C:/Users/cansh/OneDrive/Desktop/percent_bachelors_degrees_women_usa.csv")
+data = pd.read_csv("Ai_prompt\data.csv")
 
 
 def plotter(data, plot_type, time_start, time_end, column_name):
