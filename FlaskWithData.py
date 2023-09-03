@@ -5,8 +5,10 @@ import seaborn as sns
 import openai
 import tempfile
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 upload_dir = tempfile.mkdtemp()
 
 def plotter(data, plot_type, time_start, time_end, column_name):

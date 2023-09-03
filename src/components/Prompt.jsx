@@ -6,7 +6,6 @@ const Prompt = () => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
-    // Load saved files from local storage on component mount
     const savedFileData = localStorage.getItem('savedFiles');
     if (savedFileData) {
       setFiles(JSON.parse(savedFileData));
@@ -14,17 +13,14 @@ const Prompt = () => {
   }, []);
 
   useEffect(() => {
-    // Update local storage when files change
     localStorage.setItem('savedFiles', JSON.stringify(files));
   }, [files]);
 
   const handleFileClick = (file) => {
-    // Set the selected file when clicked on the sidebar
     setSelectedFile(file);
   };
 
   const handleFileUpload = (file) => {
-    // Add the newly uploaded file to the list
     setFiles((prevFiles) => [...prevFiles, file]);
   };
 

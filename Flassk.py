@@ -5,8 +5,10 @@ import seaborn as sns
 import openai
 import tempfile
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 data = pd.read_csv("Ai_prompt\data.csv")
 def plotter(data, plot_type, time_start, time_end, column_name):
     req_data = data[(data['Year'] >= time_start) & (data['Year'] <= time_end)]
