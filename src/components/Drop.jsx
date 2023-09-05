@@ -7,6 +7,7 @@ const FileUpload = ({ onFileSelect }) => {
   const fileInputRef = useRef(null);
   const [savedFiles, setSavedFiles] = useState([]);
   const [image, setImage] = useState(null);
+  const [isUploadBoxVisible, setIsUploadBoxVisible] = useState(true);
 
   useEffect(() => {
     const savedFileData = localStorage.getItem("savedFiles");
@@ -20,13 +21,9 @@ const FileUpload = ({ onFileSelect }) => {
     const droppedFile = e.dataTransfer.files[0];
     setFile(droppedFile);
     setShowSearchPopup(true);
-
-    // Save the dropped file to local storage
     const updatedFiles = [...savedFiles, droppedFile];
     localStorage.setItem("savedFiles", JSON.stringify(updatedFiles));
     setSavedFiles(updatedFiles);
-
-    // Pass the dropped file to the parent component
     onFileSelect(droppedFile);
   };
 
@@ -34,13 +31,9 @@ const FileUpload = ({ onFileSelect }) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
     setShowSearchPopup(true);
-
-    // Save the selected file to local storage
     const updatedFiles = [...savedFiles, selectedFile];
     localStorage.setItem("savedFiles", JSON.stringify(updatedFiles));
     setSavedFiles(updatedFiles);
-
-    // Pass the selected file to the parent component
     onFileSelect(selectedFile);
   };
 
@@ -53,19 +46,19 @@ const FileUpload = ({ onFileSelect }) => {
   };
 
   const handleSearch = async (searchTerm) => {
+    const form = new FormData();
+    console.log(file);
+    form.append("file", file);
+    form.append("prompt_text", searchTerm);
+    console.log(form);
+    setIsUploadBoxVisible(false);
     const response = await fetch(
       "http://localhost:5000/generate_plot",
       {
         method: "POST",
-        body: JSON.stringify({
-          prompt_text: searchTerm,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        }
+        body: form,
       }
     )
-    //this api returns a image file
     const data = await response.blob();
    const image = new File([data], "plot.png", { type: "image/png" });
     setImage(image);
@@ -79,6 +72,7 @@ const FileUpload = ({ onFileSelect }) => {
 
   return (
     <div>
+      { isUploadBoxVisible ?
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -99,14 +93,14 @@ const FileUpload = ({ onFileSelect }) => {
         ) : (
           <p>Drag & drop a file here or click to select</p>
         )}
-      </div>
+      </div> : null}
       <input
         type="file"
         accept=".pdf, .jpg, .png, .doc, .docx, .csv, .txt"
         style={{ display: "none" }}
         ref={fileInputRef}
         onChange={handleFileInputChange}
-      />
+      /> 
       {showSearchPopup && (
         <SearchPopup onClose={closeSearchPopup} onSearch={handleSearch} />
       )}
