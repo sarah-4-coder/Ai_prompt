@@ -9,7 +9,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-upload_dir = tempfile.mkdtemp()
+upload_dir = os.path.join(app.root_path, 'uploads.csv')
 
 def plotter(data, plot_type, time_start, time_end, column_name):
     req_data = data[(data['Year'] >= time_start) & (data['Year'] <= time_end)]
@@ -65,19 +65,20 @@ def extract_categories(prompt_text):
 @app.route('/generate_plot', methods=['POST'])
 def generate_plot():
     try:
-        request_data = request.get_json()
+        print(request.form)
+        request_data = request.form
         prompt_text = request_data.get('prompt_text')
-        file = request.files['csv_file']
+        file = request.files['file']
         if file and file.filename.endswith('.csv'):
-            csv_filename = os.path.join(upload_dir, 'uploaded_data.csv')
-            file.save(csv_filename)
+            file.save(upload_dir)
         else:
             return jsonify({'error': 'Invalid or missing CSV file'})
-        data = pd.read_csv(csv_filename)
+        data = pd.read_csv('uploads.csv')
         column_name, time_start, time_end, plot_type = extract_categories(prompt_text)
         temp_file_path = plotter(data, plot_type, time_start, time_end, column_name)
         return send_file(temp_file_path, mimetype='image/png')
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
