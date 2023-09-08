@@ -53,7 +53,7 @@ const FileUpload = ({ onFileSelect }) => {
     console.log(form);
     setIsUploadBoxVisible(false);
     const response = await fetch(
-      "http://localhost:5000/generate_plot",
+      "http://20.40.57.90:5000/generate_plot",
       {
         method: "POST",
         body: form,
